@@ -1,13 +1,25 @@
 import json
+import time
 import psycopg2
 import paho.mqtt.client as mqtt
 
-conn = psycopg2.connect(
-    host="postgres",
-    dbname="iot",
-    user="iot",
-    password="iot"
-)
+
+
+def connect_db():
+    while True:
+        try:
+            return psycopg2.connect(
+                host="postgres",
+                dbname="iot",
+                user="iot",
+                password="iot"
+            )
+        except psycopg2.OperationalError:
+            print("Waiting for Postgres...")
+            time.sleep(3)
+
+
+conn = connect_db()
 cur = conn.cursor()
 
 def on_message(client, userdata, msg):
